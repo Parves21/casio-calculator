@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Scientific Calculator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="calculator">
+        <div class="screen">
+            <input type="text" id="display" readonly>
+        </div>
+        <div class="buttons">
+            <!-- Scientific Functions -->
+            <button onclick="appendToDisplay('sin(')" class="function">sin</button>
+            <button onclick="appendToDisplay('cos(')" class="function">cos</button>
+            <button onclick="appendToDisplay('tan(')" class="function">tan</button>
+            <button onclick="appendToDisplay('√(')" class="function">√</button>
+            
+            <button onclick="appendToDisplay('log(')" class="function">log</button>
+            <button onclick="appendToDisplay('ln(')" class="function">ln</button>
+            <button onclick="appendToDisplay('π')" class="function">π</button>
+            <button onclick="appendToDisplay('e')" class="function">e</button>
+
+            <!-- Number Pad -->
+            <button onclick="appendToDisplay('7')">7</button>
+            <button onclick="appendToDisplay('8')">8</button>
+            <button onclick="appendToDisplay('9')">9</button>
+            <button onclick="appendToDisplay('/')" class="operator">/</button>
+            
+            <button onclick="appendToDisplay('4')">4</button>
+            <button onclick="appendToDisplay('5')">5</button>
+            <button onclick="appendToDisplay('6')">6</button>
+            <button onclick="appendToDisplay('*')" class="operator">×</button>
+            
+            <button onclick="appendToDisplay('1')">1</button>
+            <button onclick="appendToDisplay('2')">2</button>
+            <button onclick="appendToDisplay('3')">3</button>
+            <button onclick="appendToDisplay('-')" class="operator">-</button>
+            
+            <button onclick="appendToDisplay('0')">0</button>
+            <button onclick="appendToDisplay('.')">.</button>
+            <button onclick="appendToDisplay('(')">(</button>
+            <button onclick="appendToDisplay(')')">)</button>
+            
+            <!-- Control Buttons -->
+            <button onclick="clearDisplay()" class="clear">C</button>
+            <button onclick="deleteLast()" class="delete">DEL</button>
+            <button onclick="appendToDisplay('^')" class="operator">^</button>
+            <button onclick="calculateResult()" class="equal">=</button>
+        </div>
+    </div>
+    <script>
+        function appendToDisplay(value) {
+            document.getElementById('display').value += value;
+        }
+
+        function clearDisplay() {
+            document.getElementById('display').value = '';
+        }
+
+        function deleteLast() {
+            const display = document.getElementById('display');
+            display.value = display.value.slice(0, -1);
+        }
+
+        async function calculateResult() {
+            const display = document.getElementById('display');
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ expression: display.value })
+                });
+                const data = await response.json();
+                display.value = data.result;
+            } catch (error) {
+                display.value = 'Error';
+            }
+        }
+    </script>
+</body>
+</html>
